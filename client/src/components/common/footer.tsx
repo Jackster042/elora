@@ -1,184 +1,201 @@
-import { useEffect } from "react";
-import { footerLinks } from "@/config";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import {
-  Facebook,
-  Flower,
-  Instagram,
-  SquareArrowUp,
-  Twitter,
-  Youtube,
-} from "lucide-react";
+import { Link } from "react-router-dom";
+import { Flower, Instagram, Twitter, Facebook } from "lucide-react";
 import { Separator } from "../ui/separator";
-import { getFilteredProducts } from "@/store/shop/product-slice";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState, AppDispatch } from "@/store/store";
 
 const socialLinks = [
   {
-    label: "Facebook",
-    url: "https://www.facebook.com",
-    icon: <Facebook />,
-  },
-  {
     label: "Instagram",
     url: "https://www.instagram.com",
-    icon: <Instagram />,
+    icon: <Instagram className="w-5 h-5" />,
   },
   {
     label: "Twitter",
     url: "https://www.twitter.com",
-    icon: <Twitter />,
+    icon: <Twitter className="w-5 h-5" />,
   },
   {
-    label: "Youtube",
-    url: "https://www.youtube.com",
-    icon: <Youtube />,
+    label: "Facebook",
+    url: "https://www.facebook.com",
+    icon: <Facebook className="w-5 h-5" />,
   },
 ];
 
-const footer = () => {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const dispatch = useDispatch<AppDispatch>();
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const navigate = useNavigate();
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const [ setSearchParams ] = useSearchParams();
+const quickLinks = [
+  { label: "About Us", path: "/about" },
+  { label: "Contact", path: "/contact" },
+  { label: "FAQ", path: "/faq" },
+];
 
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const { products } = useSelector(
-    (state: RootState) => state.shopProductStore
-  );
+const legalLinks = [
+  { label: "Privacy Policy", path: "/privacy" },
+  { label: "Terms of Service", path: "/terms" },
+  { label: "Shipping Policy", path: "/shipping" },
+];
 
-  const handleNavigateToListingPage = (
-    footerLink: string,
-    section: "category" | "brand"
-  ) => {
-    // For products link, ensure we clear filters and force a new API call
-    if (footerLink === "categories" || footerLink === "brands") {
-      sessionStorage.removeItem("filters");
-      if (location.pathname.includes("listing")) {
-        dispatch(
-          getFilteredProducts({
-            filterParams: {},
-            sortParams: "price-lowtohigh",
-          })
-        );
-        // @ts-ignore
-        setSearchParams(new URLSearchParams());
-      } else {
-        navigate(`/shop/listing`);
-      }
-      return;
-    }
-
-    sessionStorage.removeItem("filters");
-    const filteredItems = {
-      [section]: [footerLink],
-    };
-    sessionStorage.setItem("filters", JSON.stringify(filteredItems));
-    navigate(`/shop/listing`);
-  };
-
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  useEffect(() => {
-    dispatch(
-      getFilteredProducts({
-        filterParams: {},
-        sortParams: "price-lowtohigh",
-      })
-    );
-  }, []);
-
+const Footer = () => {
   return (
-    <div className="flex flex-col items-center justify-center w-full min-h-[300px] bg-gray-100">
-      <Separator className="w-full" />
-
-      <div className="flex justify-between w-full max-w-7xl mx-auto px-4 mt-10">
-        <Link
-          to="/shop/home"
-          className="flex items-center gap-2"
-          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-        >
-          <Flower className="h-8 w-8" />
-          <span className="font-bold text-3xl">Elora</span>
-        </Link>
-
-        <div className="hidden md:flex lg:flex xl:flex items-center gap-10">
-          {socialLinks.map((link) => (
-            <Link to={link.url} key={link.label}>
-              {link.icon}
-            </Link>
-          ))}
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-500 hidden md:block lg:block xl:block">
-            Back to top
-          </span>
-          <SquareArrowUp
-            className="h-8 w-8 cursor-pointer ml-4 hover:bg-gray-200 rounded-lg p-1"
-            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          />
+    <footer className="w-full bg-black text-white mt-auto">
+      {/* Newsletter Section */}
+      <div className="border-b border-gray-800">
+        <div className="max-w-7xl mx-auto px-4 py-12">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="text-center md:text-left">
+              <h3 className="text-2xl font-light mb-2">Stay Updated</h3>
+              <p className="text-gray-400 text-sm">
+                Subscribe to get special offers and updates
+              </p>
+            </div>
+            <div className="flex gap-2 w-full md:w-auto">
+              <input
+                type="email"
+                placeholder="Enter your email"
+                className="px-4 py-3 bg-gray-900 border border-gray-800 rounded-none text-sm focus:outline-none focus:border-white transition-colors w-full md:w-80"
+              />
+              <button className="px-6 py-3 bg-white text-black hover:bg-gray-200 transition-colors font-medium text-sm whitespace-nowrap">
+                Subscribe
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* <Separator className="w-full my-4" /> */}
+      {/* Main Footer Content */}
+      <div className="max-w-7xl mx-auto px-4 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          {/* Brand Section */}
+          <div className="space-y-4">
+            <Link
+              to="/shop/home"
+              className="flex items-center gap-2 group"
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            >
+              <Flower className="h-6 w-6 group-hover:rotate-12 transition-transform" />
+              <span className="font-light text-2xl tracking-wide">Elora</span>
+            </Link>
+            <p className="text-sm text-gray-400 leading-relaxed">
+              Minimalist fashion for the modern lifestyle. Quality pieces that
+              speak for themselves.
+            </p>
+            {/* Social Links */}
+            <div className="flex gap-4 pt-2">
+              {socialLinks.map((link) => (
+                <a
+                  key={link.label}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-400 hover:text-white transition-colors"
+                  aria-label={link.label}
+                >
+                  {link.icon}
+                </a>
+              ))}
+            </div>
+          </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-28 mt-10 mb-4">
-        {footerLinks?.map((footerLink) => (
-          <div key={footerLink.title}>
-            <h2 className="text-lg font-bold">{footerLink.title}</h2>
-            <ul className="list-none">
-              {footerLink.links.map((link) => (
-                <li key={link.label} className="py-1 hover:underline">
-                  {footerLink.title === "Categories" ? (
-                    <span
-                      className="cursor-pointer hover:text-primary transition-colors"
-                      onClick={() =>
-                        handleNavigateToListingPage(
-                          link.label.toLowerCase(),
-                          "category"
-                        )
-                      }
-                    >
-                      {link.label}
-                    </span>
-                  ) : footerLink.title === "Brands" ? (
-                    <span
-                      className="cursor-pointer hover:text-primary transition-colors"
-                      onClick={() =>
-                        handleNavigateToListingPage(
-                          link.label.toLowerCase(),
-                          "brand"
-                        )
-                      }
-                    >
-                      {link.label}
-                    </span>
-                  ) : (
-                    <Link to={link.url}>{link.label}</Link>
-                  )}
+          {/* Quick Links */}
+          <div>
+            <h4 className="font-medium mb-4 text-sm uppercase tracking-wider">
+              Quick Links
+            </h4>
+            <ul className="space-y-3">
+              {quickLinks.map((link) => (
+                <li key={link.label}>
+                  <Link
+                    to={link.path}
+                    className="text-sm text-gray-400 hover:text-white transition-colors"
+                  >
+                    {link.label}
+                  </Link>
                 </li>
               ))}
             </ul>
           </div>
-        ))}
-        <div className="flex md:hidden lg:hidden xl:hidden gap-10 mt-10">
-          {socialLinks.map((link) => (
-            <Link to={link.url} key={link.label}>
-              {link.icon}
-            </Link>
-          ))}
+
+          {/* Shop */}
+          <div>
+            <h4 className="font-medium mb-4 text-sm uppercase tracking-wider">
+              Shop
+            </h4>
+            <ul className="space-y-3">
+              <li>
+                <Link
+                  to="/shop/listing"
+                  className="text-sm text-gray-400 hover:text-white transition-colors"
+                >
+                  All Products
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/shop/listing"
+                  className="text-sm text-gray-400 hover:text-white transition-colors"
+                >
+                  New Arrivals
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/shop/listing"
+                  className="text-sm text-gray-400 hover:text-white transition-colors"
+                >
+                  Sale
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Legal */}
+          <div>
+            <h4 className="font-medium mb-4 text-sm uppercase tracking-wider">
+              Legal
+            </h4>
+            <ul className="space-y-3">
+              {legalLinks.map((link) => (
+                <li key={link.label}>
+                  <Link
+                    to={link.path}
+                    className="text-sm text-gray-400 hover:text-white transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
 
-      <Separator className="w-full my-4" />
-
-      <p className="text-sm text-gray-500 pb-4">
-        &copy; {new Date().getFullYear()} Elora. All rights reserved.
-      </p>
-    </div>
+      {/* Bottom Bar */}
+      <Separator className="bg-gray-800" />
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-sm text-gray-400">
+            &copy; {new Date().getFullYear()} Elora. All rights reserved.
+          </p>
+          <button
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            className="text-sm text-gray-400 hover:text-white transition-colors flex items-center gap-2"
+          >
+            Back to top
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 10l7-7m0 0l7 7m-7-7v18"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </footer>
   );
 };
 
-export default footer;
+export default Footer;
