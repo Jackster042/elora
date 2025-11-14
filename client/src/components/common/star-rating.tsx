@@ -8,7 +8,6 @@ const StarRatingComponent = ({
   rating: number;
   handleRatingChange: (rating: number) => void;
 }) => {
-  console.log(rating, "rating from STAR RATING COMPONENT");
   return (
     <div className="flex gap-0.5">
       {[1, 2, 3, 4, 5].map((star) => (

@@ -49,7 +49,6 @@ const ProductDetailsDialog = ({
   // HANDLE ADD TO CART
   const handleAddToCart = (id: string, totalStock: number) => {
     if (!user || !user.id) {
-      console.error("User not logged in or user ID is missing");
       alert("Please log in to add items to cart");
       return;
     }
@@ -108,7 +107,6 @@ const ProductDetailsDialog = ({
         userName: user?.userName,
       })
     ).then((data) => {
-      console.log(data, "data from ADD REVIEW");
       if (data?.payload?.success) {
         setRating(0);
         setReviewMsg("");

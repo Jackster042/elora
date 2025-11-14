@@ -26,7 +26,6 @@ const AuthRegister = () => {
     e.preventDefault();
     dispatch(registerUser(formData))
       .then((data) => {
-        console.log("Registration response:", data);
         if (data?.payload?.success) {
           toast({
             title: "Success",
@@ -42,7 +41,6 @@ const AuthRegister = () => {
         }
       })
       .catch((error) => {
-        console.error("Registration error:", error);
         toast({
           title: "Error",
           description: "Registration failed. Please try again.",
@@ -54,18 +52,12 @@ const AuthRegister = () => {
   // Handle navigation after successful registration
   React.useEffect(() => {
     if (registrationSuccess) {
-      console.log("Registration successful, navigating to login...");
       // Add a small delay to ensure toast is visible
       setTimeout(() => {
         navigate("/auth/login", { replace: true });
       }, 1500);
     }
   }, [registrationSuccess, navigate]);
-
-  // Monitor location changes for debugging
-  React.useEffect(() => {
-    // console.log("Current location:", location.pathname);
-  }, [location]);
 
   return (
     <div className="mx-auto w-full max-w-md space-x-6">

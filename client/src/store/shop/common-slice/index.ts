@@ -29,7 +29,6 @@ export const addFeatureImage = createAsyncThunk(
       const response = await axios.post(`${API_URL}/api/common/feature/add`, {
         image,
       });
-      console.log(response, "response from ADD FEATURED IMAGE");
       return response.data;
     } catch (error) {
       console.error(error, "error from ADD FEATURED IMAGE");
@@ -47,7 +46,6 @@ export const getFeatureImage = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await axios.get(`${API_URL}/api/common/feature/get`);
-      console.log(response, "response from GET FEATURED IMAGE");
       return response.data;
     } catch (error) {
       console.error(error, "error from GET FEATURED IMAGE");

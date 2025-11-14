@@ -37,15 +37,12 @@ const AuthLogin = () => {
     e.preventDefault();
     dispatch(loginUser(formData))
       .then((data) => {
-        console.log("Login response:", data);
         if (data?.payload?.success) {
-          console.log("Login successful, attempting navigation...");
           toast({
             title: "Success",
             description: data?.payload?.message,
           });
         } else {
-          console.log("Login failed:", data?.payload?.response?.message);
           toast({
             title: "Error",
             description: data?.payload?.response?.message,
@@ -54,22 +51,17 @@ const AuthLogin = () => {
         }
       })
       .catch((error) => {
-        console.error("Login error:", error);
+        // Handle error silently or log to monitoring service
       });
   }
 
   React.useEffect(() => {
     if (isAuthenticated && user) {
-      // console.log("Auth state updated, user:", user);
       const targetPath =
         user.role === "admin" ? "/admin/dashboard" : "/shop/home";
       navigate(targetPath, { replace: true });
     }
   }, [isAuthenticated, user, navigate]);
-
-  React.useEffect(() => {
-    // console.log("Location changed to:", location.pathname);
-  }, [location]);
 
   return (
     <div className="mx-auto w-full max-w-md space-x-6">

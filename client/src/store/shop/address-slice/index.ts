@@ -31,13 +31,9 @@ export const addAddress = createAsyncThunk(
         `${API_URL}/api/shop/address/add`,
         formData
       );
-      console.log(
-        response.data,
-        "response from addAddress in address-slice FRONTEND"
-      );
       return response.data;
     } catch (error) {
-      console.log(error, "error from addAddress in address-slice FRONTEND");
+      console.error(error, "error from addAddress in address-slice FRONTEND");
       return rejectWithValue({
         message: (error as AxiosError).message,
         code: (error as AxiosError).code,
@@ -54,10 +50,6 @@ export const fetchAllData = createAsyncThunk(
     try {
       const response = await axios.get(
         `${API_URL}/api/shop/address/get/${userId}`
-      );
-      console.log(
-        response.data,
-        "response from fetchAllData in address-slice FRONTEND"
       );
       return response.data;
     } catch (error) {
@@ -87,10 +79,6 @@ export const editAddress = createAsyncThunk(
         `${API_URL}/api/shop/address/update/${userId}/${addressId}`,
         formData
       );
-      console.log(
-        response.data,
-        "response from editAddress in address-slice FRONTEND"
-      );
       return response.data;
     } catch (error) {
       console.error(error, "error from editAddress in address-slice FRONTEND");
@@ -113,10 +101,6 @@ export const deleteAddress = createAsyncThunk(
     try {
       const response = await axios.delete(
         `${API_URL}/api/shop/address/delete/${userId}/${addressId}`
-      );
-      console.log(
-        response.data,
-        "response from deleteAddress in address-slice FRONTEND"
       );
       return response.data;
     } catch (error) {
@@ -143,7 +127,6 @@ const addressSlice = createSlice({
       state.isLoading = true;
     });
     builder.addCase(addAddress.fulfilled, (state, action) => {
-      console.log(action.payload, "action.payload from addAddress FRONTEND");
       state.isLoading = false;
       // state.addressList = action.payload.data;
     });

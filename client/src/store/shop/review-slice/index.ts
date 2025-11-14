@@ -30,7 +30,6 @@ export const addReview = createAsyncThunk(
         `${API_URL}/api/shop/review/add`,
         formData
       );
-      console.log(response, "response from ADD REVIEW CLIENT SIDE");
       return response.data;
     } catch (error) {
       console.error(error, "error from ADD REVIEW CLIENT SIDE");
@@ -50,7 +49,6 @@ export const getReviews = createAsyncThunk(
       const response = await axios.get(
         `${API_URL}/api/shop/review/${productId}`
       );
-      console.log(response, "response from GET REVIEW CLIENT SIDE");
       return response.data;
     } catch (error) {
       console.error(error, "error from GET REVIEW CLIENT SIDE");

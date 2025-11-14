@@ -112,7 +112,6 @@ const ShoppingHome = () => {
 
   const handleAddToCart = (id: string) => {
     if (!user || !user.id) {
-      console.error("User not logged in or user ID is missing");
       alert("Please log in to add items to cart");
       return;
     }
@@ -163,8 +162,6 @@ const ShoppingHome = () => {
   useEffect(() => {
     dispatch(getFeatureImage());
   }, [dispatch]);
-
-  console.log(products, "products from HOME PAGE");
 
   return (
     <div

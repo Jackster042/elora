@@ -37,10 +37,6 @@ export const createNewOrder = createAsyncThunk(
         `${API_URL}/api/shop/order/create`,
         orderData
       );
-      console.log(
-        response.data,
-        "response.data from CREATE NEW ORDER - FRONTEND"
-      );
       return response.data;
     } catch (error) {
       return rejectWithValue({
@@ -69,10 +65,6 @@ export const capturePayment = createAsyncThunk(
         paymentId,
         payerId,
       });
-      console.log(
-        response.data,
-        "response.data from CAPTURE PAYMENT - FRONTEND"
-      );
       return response.data;
     } catch (error) {
       console.error(error, "error from CAPTURE PAYMENT - FRONTEND");
@@ -92,10 +84,6 @@ export const getAllOrdersByUser = createAsyncThunk(
       const response = await axios.get(
         `${API_URL}/api/shop/order/list/${userId}`
       );
-      console.log(
-        response.data,
-        "response.data from GET ALL ORDERS BY USER - FRONTEND"
-      );
       return response.data;
     } catch (error) {
       console.error(error, "error from GET ALL ORDERS BY USER - FRONTEND");
@@ -114,10 +102,6 @@ export const getOrderDetails = createAsyncThunk(
     try {
       const response = await axios.get(
         `${API_URL}/api/shop/order/details/${id}`
-      );
-      console.log(
-        response.data,
-        "response.data from GET ORDER DETAILS - FRONTEND"
       );
       return response.data;
     } catch (error) {

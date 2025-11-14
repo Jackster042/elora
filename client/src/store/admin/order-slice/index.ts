@@ -29,7 +29,6 @@ export const getAllOrdersForAdmin = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await axios.get(`${API_URL}/api/admin/orders/get`);
-      console.log(response, "response from getAllOrdersForAdmin");
       return response.data;
     } catch (error) {
       console.error(error, "error from getAllOrdersForAdmin");
@@ -49,7 +48,6 @@ export const getOrderDetailsForAdmin = createAsyncThunk(
       const response = await axios.get(
         `${API_URL}/api/admin/orders/details/${id}`
       );
-      console.log(response, "response from getOrderDetailsForAdmin");
       return response.data;
     } catch (error) {
       console.error(error, "error from getOrderDetailsForAdmin");
@@ -73,7 +71,6 @@ export const updateOrderStatus = createAsyncThunk(
         `${API_URL}/api/admin/orders/update/${id}`,
         { orderStatus }
       );
-      console.log(response, "response from updateOrderStatus");
       return response.data;
     } catch (error) {
       console.error(error, "error from updateOrderStatus");
@@ -91,7 +88,6 @@ const adminOrderSlice = createSlice({
   initialState,
   reducers: {
     resetOrderDetails: (state) => {
-      console.log("resetOrderDetails");
       state.orderDetails = null;
     },
   },

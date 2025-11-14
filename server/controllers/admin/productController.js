@@ -1,7 +1,6 @@
 const { uploadToCloudinary } = require("../../utils/cloudinary");
 const ProductModel = require("../../models/ProductModels");
 exports.handleImageUpload = async (req, res, next) => {
-  console.log(req.file, "req.file from IMAGE UPLOAD");
   try {
     // convert the file to base64
     const b64 = Buffer.from(req.file.buffer).toString("base64");
@@ -74,7 +73,6 @@ exports.addProduct = async (req, res, next) => {
 exports.getAllProducts = async (req, res, next) => {
   try {
     const products = await ProductModel.find({});
-    console.log(products, "products from GET ALL PRODUCTS");
 
     return res.status(200).json({
       success: true,

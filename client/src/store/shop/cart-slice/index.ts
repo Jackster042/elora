@@ -39,7 +39,6 @@ export const addToCart = createAsyncThunk(
         productId,
         quantity,
       });
-      console.log(response.data, "response from ADD TO CART - FRONTEND");
       return response.data;
     } catch (error) {
       console.error(error, "error from ADD TO CART - FRONTEND");
@@ -60,7 +59,6 @@ export const getCart = createAsyncThunk(
       const response = await axios.get(
         `${API_URL}/api/shop/cart/get/${userId}`
       );
-      console.log(response.data, "response from GET CART - FRONTEND");
       return response.data;
     } catch (error) {
       console.error(error, "error from GET CART - FRONTEND");
@@ -90,7 +88,6 @@ export const updateQuantity = createAsyncThunk(
         productId,
         quantity,
       });
-      console.log(response.data, "response from UPDATE QUANTITY - FRONTEND");
       return response.data;
     } catch (error) {
       console.error(error, "error from UPDATE QUANTITY - FRONTEND");
@@ -114,7 +111,6 @@ export const removeFromCart = createAsyncThunk(
       const response = await axios.delete(
         `${API_URL}/api/shop/cart/${userId}/${productId}`
       );
-      console.log(response.data, "response from REMOVE FROM CART - FRONTEND");
       return response.data;
     } catch (error) {
       console.error(error, "error from REMOVE FROM CART - FRONTEND");
@@ -137,7 +133,6 @@ const shopCartSlice = createSlice({
       state.isLoading = true;
     });
     builder.addCase(addToCart.fulfilled, (state, action) => {
-      console.log(action.payload, "action.payload from ADD TO CART - REDUX");
       state.isLoading = false;
       state.cartItems = action.payload.data;
     });

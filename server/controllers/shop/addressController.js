@@ -26,7 +26,7 @@ exports.addAddress = async (req, res, next) => {
       data: newAddress,
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res
       .status(500)
       .json({ success: false, message: "Internal server error" });
@@ -71,10 +71,6 @@ exports.editAddress = async (req, res, next) => {
       addressId,
       fromData,
       { new: true }
-    );
-    console.log(
-      updatedAddress,
-      "updatedAddress from editAddress controller BACKEND"
     );
 
     if (!updatedAddress)

@@ -69,7 +69,7 @@ exports.updateOrderStatus = async (req, res) => {
       data: order,
     });
   } catch (error) {
-    console.log(error, "error from UPDATE ORDER STATUS");
+    console.error(error, "error from UPDATE ORDER STATUS");
     return res.status(500).json({
       success: false,
       message: "Internal server error",

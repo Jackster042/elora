@@ -26,8 +26,6 @@ export interface RootState {
   commonStore: ReturnType<typeof commonSlice>;
 }
 
-// console.log(authSlice, "authSlice");
-
 const store = configureStore({
   reducer: {
     authStore: authSlice,

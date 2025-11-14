@@ -46,7 +46,6 @@ const SearchProducts = () => {
 
   const handleAddToCart = (id: string, totalStock: number) => {
     if (!user || !user.id) {
-      console.error("User not logged in or user ID is missing");
       alert("Please log in to add items to cart");
       return;
     }
@@ -117,7 +116,6 @@ const SearchProducts = () => {
               value={keyword}
               onChange={(e) => {
                 setKeyword(e.target.value);
-                console.log(e.target.value);
               }}
             />
           </div>

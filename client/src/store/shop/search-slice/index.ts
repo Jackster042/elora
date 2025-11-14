@@ -27,7 +27,6 @@ export const getSearchResults = createAsyncThunk(
   async (keyword: string, rejectWithValue: any) => {
     try {
       const response = await axios.get(`${API_URL}/api/shop/search/${keyword}`);
-      console.log(response, "response FROM GET SEARCH RESULTS");
       return response.data;
     } catch (error) {
       console.error(error, "error FROM GET SEARCH RESULTS");

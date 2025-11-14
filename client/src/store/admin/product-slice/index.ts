@@ -41,7 +41,6 @@ export const addNewProduct = createAsyncThunk(
           withCredentials: true,
         }
       );
-      console.log(response.data, "response from GET ALL PRODUCTS");
       return response.data;
     } catch (error) {
       console.error(error, "error from GET ALL PRODUCTS");
@@ -66,7 +65,6 @@ export const getAllProducts = createAsyncThunk(
           withCredentials: true,
         }
       );
-      console.log(response.data.products, "response from GET ALL PRODUCTS");
       return response.data;
     } catch (error) {
       console.error(error, "error from GET ALL PRODUCTS");
@@ -98,7 +96,6 @@ export const editProduct = createAsyncThunk(
           withCredentials: true,
         }
       );
-      console.log(response.data, "response from EDIT PRODUCT");
       return response.data;
     } catch (error) {
       console.error(error, "error from EDIT PRODUCT");
@@ -123,7 +120,6 @@ export const deleteProduct = createAsyncThunk(
           withCredentials: true,
         }
       );
-      console.log(response.data, "response from DELETE PRODUCT");
       return response.data;
     } catch (error) {
       console.error(error, "error from DELETE PRODUCT");
@@ -145,8 +141,6 @@ const AdminProductSlice = createSlice({
       state.isLoading = true;
     });
     builder.addCase(getAllProducts.fulfilled, (state, action) => {
-      console.log(action.payload, "action.payload from GET ALL PRODUCTS");
-
       state.isLoading = false;
       state.products = action.payload.products;
     });

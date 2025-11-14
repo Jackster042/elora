@@ -35,7 +35,6 @@ exports.register = async (req, res, next) => {
         user: savedUSer,
       });
     } else {
-      console.log("User with this email already exists");
       return res.status(400).json({
         success: false,
         message: "User with this email already exists",

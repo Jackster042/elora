@@ -32,8 +32,8 @@ const AdminDashboard = () => {
             setUploadedImageUrl("");
           }
         })
-        .catch((error) => {
-          console.log(error, "error from ADD FEATURED IMAGE");
+        .catch(() => {
+          // Handle error silently or log to monitoring service
         });
     }
   };

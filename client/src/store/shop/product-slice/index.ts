@@ -42,7 +42,6 @@ export const getFilteredProducts = createAsyncThunk(
       const response = await axios.get(
         `${API_URL}/api/shop/products/get?${query}`
       );
-      console.log(response.data, "response from GET FILTERED PRODUCTS");
       return response.data;
     } catch (error) {
       console.error(error, "error from GET FILTERED PRODUCTS");
@@ -62,7 +61,6 @@ export const getProductDetails = createAsyncThunk(
       const response = await axios.get(
         `${API_URL}/api/shop/products/get/${id}`
       );
-      console.log(response.data, "response from GET PRODUCT DETAILS - REDUX");
       return response.data;
     } catch (error) {
       console.error(error, "error from GET PRODUCT DETAILS");

@@ -90,11 +90,6 @@ const footer = () => {
     );
   }, []);
 
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  useEffect(() => {
-    console.log(products, " products from FOOTER");
-  }, [products]);
-
   return (
     <div className="flex flex-col items-center justify-center w-full min-h-[300px] bg-gray-100">
       <Separator className="w-full" />
