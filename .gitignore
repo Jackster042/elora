@@ -69,3 +69,5 @@ mongodb.log
 *.swo
 .next
 .qodo
+
+.early.coverage
