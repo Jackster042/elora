@@ -2,6 +2,19 @@ const { uploadToCloudinary } = require("../../utils/cloudinary");
 const ProductModel = require("../../models/ProductModels");
 exports.handleImageUpload = async (req, res, next) => {
   try {
+    console.log("Upload request received");
+    console.log("req.file:", req.file);
+    console.log("req.body:", req.body);
+    console.log("Content-Type:", req.headers["content-type"]);
+    
+    // Check if file exists
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "No file uploaded",
+      });
+    }
+
     // convert the file to base64
     const b64 = Buffer.from(req.file.buffer).toString("base64");
 
@@ -18,10 +31,11 @@ exports.handleImageUpload = async (req, res, next) => {
       result,
     });
   } catch (error) {
-    console.error(error, "error from IMAGE UPLOAD");
+    console.error("Image upload error:", error);
     return res.status(400).json({
       success: false,
-      message: "Error uploading image",
+      message: error.message || "Error uploading image",
+      error: error.toString(),
     });
   }
 };
