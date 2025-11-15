@@ -127,7 +127,7 @@ const App = () => {
     },
   ]);
   return (
-    <div className="flex flex-col overflow-hidden bg-white">
+    <div className="h-full bg-white">
       <RouterProvider router={router} />
     </div>
   );

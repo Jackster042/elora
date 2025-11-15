@@ -67,7 +67,7 @@ exports.getCart = async (req, res, next) => {
 
     const cart = await CartModel.findOne({ userId }).populate({
       path: "items.productId",
-      select: "image title price",
+      select: "image title price salePrice",
     });
 
     if (!cart) {
@@ -150,7 +150,7 @@ exports.updateQuantity = async (req, res, next) => {
 
     await cart.populate({
       path: "items.productId",
-      select: "image title price",
+      select: "image title price salePrice",
     });
 
     const populateCartItems = cart.items.map((item) => ({
@@ -204,7 +204,7 @@ exports.removeFromCart = async (req, res, next) => {
 
     await cart.populate({
       path: "items.productId",
-      select: "image title price",
+      select: "image title price salePrice",
     });
 
     const populateCartItems = cart.items.map((item) => ({

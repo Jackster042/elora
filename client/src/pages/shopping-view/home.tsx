@@ -1,4 +1,3 @@
-
 // REACT
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -164,15 +163,7 @@ const ShoppingHome = () => {
   }, [dispatch]);
 
   return (
-    <div
-      className="flex flex-col  min-h-screen"
-      // onClick={() => {
-      //   window.scrollTo({
-      //     top: 0,
-      //     behavior: "smooth",
-      //   });
-      // }}
-    >
+    <div className="flex flex-col  min-h-screen">
       <div className="relative w-full h-[600px] overflow-hidden">
         {featureImageList && featureImageList.length > 0 ? (
           featureImageList.map((image, index) => (
@@ -180,7 +171,6 @@ const ShoppingHome = () => {
               key={index}
               src={image?.image}
               alt={`Home Image ${index + 1}`}
-              // onMouseEnter={() => setIsHovered(true)}
               className={`${
                 index === currentSlide ? "opacity-100" : "opacity-0"
               } absolute inset-0 w-full h-full object-cover transition-opacity duration-1000`}
@@ -223,6 +213,7 @@ const ShoppingHome = () => {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
             {categories.map((categoryItem) => (
               <Card
+                key={categoryItem.id}
                 className="cursor-pointer hover:shadow-lg transition-shadow"
                 onClick={() => {
                   window.scrollTo({
@@ -250,6 +241,7 @@ const ShoppingHome = () => {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {brand.map((brandItem) => (
               <Card
+                key={brandItem.id}
                 className="cursor-pointer hover:shadow-lg transition-shadow"
                 onClick={() => {
                   window.scrollTo({
@@ -280,6 +272,7 @@ const ShoppingHome = () => {
           {products && products.length > 0 ? (
             products.map((productItem) => (
               <ShoppingProductTile
+                key={productItem._id}
                 product={productItem}
                 handleGetProductDetails={handleGetProductDetails}
                 handleAddToCart={handleAddToCart}

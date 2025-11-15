@@ -40,7 +40,7 @@ const UserCartWrapper = ({
         {/* RENDER ITEMS */}
         {items && items.length > 0
           ? items.map((item) => (
-              <UserCartItemsContainer key={item._id} items={item} />
+              <UserCartItemsContainer key={item._id || ""} items={item} />
             ))
           : "No items in cart"}
       </div>

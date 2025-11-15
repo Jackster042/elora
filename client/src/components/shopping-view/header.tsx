@@ -29,21 +29,6 @@ import { RootState } from "@/store/store";
 import { logoutUser } from "@/store/auth-slice";
 import { AppDispatch } from "@/store/store";
 
-interface CartResponse {
-  items: Array<{
-    productId: {
-      _id: string;
-      image: string;
-      title: string;
-      price: number;
-      salePrice?: number; // Make this optional to match your CartItem type
-    };
-    quantity: number;
-    _id: string;
-  }>;
-}
-
-
 // Config
 import { shoppingViewHeaderMenuItems } from "@/config";
 import { useState } from "react";
@@ -135,7 +120,7 @@ const HeaderRightContent = () => {
   const { user } = useSelector((state: RootState) => state.authStore);
   const { cartItems } = useSelector(
       (state: RootState) => state.shoppingCartStore
-  ) as unknown as { cartItems: CartResponse }; // Add type assertion here
+  );
 
   const [openCartSheet, setOpenCartSheet] = useState(false);
   const navigate = useNavigate();
@@ -149,16 +134,8 @@ const HeaderRightContent = () => {
     dispatch(getCart(user.id));
   }, [dispatch, user.id]);
 
-  // Transform cart items to match CartItem type
-  const transformedCartItems = cartItems?.items?.map(item => ({
-    image: item.productId.image,
-    title: item.productId.title,
-    price: item.productId.price,
-    salePrice: item.productId.salePrice || 0, // Default to 0 if salePrice doesn't exist
-    productId: item.productId._id,
-    quantity: item.quantity,
-    _id: item._id
-  })) || [];
+  // cartItems is already in the correct format from backend
+  const items = cartItems?.items || [];
 
 
   return (
@@ -173,13 +150,13 @@ const HeaderRightContent = () => {
         >
           <ShoppingCart className="h-6 w-6" />
           <span className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center">
-            {cartItems?.items?.length || 0}
+            {items?.length || 0}
           </span>
           <span className="sr-only">user cart</span>
         </Button>
         <UserCartWrapper
           setOpenCartSheet={setOpenCartSheet}
-          items={transformedCartItems}
+          items={items}
         />
       </Sheet>
       {/* USER DROPDOWN MENU */}

@@ -72,22 +72,38 @@ const ProductImageUpload: React.FC<ProductImageUploadProps> = ({
       }
 
       const response = await axios.post(
-        "http://localhost:3000/api/admin/products/upload-image",
-        data
+        "http://localhost:3001/api/admin/products/upload-image",
+        data,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
 
       if (response?.data?.success) {
         setUrl(response?.data?.result?.url);
         setImageLoadingState(false);
+        toast({
+          title: "Success",
+          description: "Image uploaded successfully",
+        });
       } else {
+        setImageLoadingState(false);
         toast({
           title: "Error",
-          description: response?.data?.message,
+          description: response?.data?.message || "Failed to upload image",
           variant: "destructive",
         });
       }
-    } catch (error) {
+    } catch (error: any) {
+      setImageLoadingState(false);
       console.error(error, "error from uploadImageToCloudinary");
+      toast({
+        title: "Error",
+        description: error?.response?.data?.message || "Failed to upload image",
+        variant: "destructive",
+      });
     }
   };
 

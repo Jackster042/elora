@@ -125,7 +125,7 @@ const ShoppingCheckout = () => {
           <div className="flex flex-col gap-4">
             {cartItems && cartItems.items && cartItems.items.length > 0 ? (
               cartItems.items.map((item: any) => (
-                <UserCartItemsContainer key={item._id} items={item} />
+                <UserCartItemsContainer key={item._id || ""} items={item} />
               ))
             ) : (
               <div className="flex flex-col gap-4">
