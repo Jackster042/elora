@@ -17,6 +17,8 @@ import { loginUser } from "@/store/auth-slice";
 import { AppDispatch } from "@/store/store";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import { mergeGuestCart, getCart } from "@/store/shop/cart-slice";
+import { localCart } from "@/utils/localCart";
 
 const initialState = {
   email: "",
@@ -57,11 +59,22 @@ const AuthLogin = () => {
 
   React.useEffect(() => {
     if (isAuthenticated && user) {
-      const targetPath =
-        user.role === "admin" ? "/admin/dashboard" : "/shop/home";
-      navigate(targetPath, { replace: true });
+      // Merge guest cart if exists
+      const hasLocalCart = localCart.hasItems();
+      if (hasLocalCart && user?.id) {
+        dispatch(mergeGuestCart(user.id)).then(() => {
+          dispatch(getCart(user.id));
+          toast({
+            title: "Cart synced",
+            description: "Your cart items have been saved",
+          });
+        });
+      }
+
+      // Navigation is handled by CheckAuth component
+      // which checks for redirectAfterLogin in sessionStorage
     }
-  }, [isAuthenticated, user, navigate]);
+  }, [isAuthenticated, user, dispatch, toast]);
 
   return (
     <div className="mx-auto w-full max-w-md space-x-6">

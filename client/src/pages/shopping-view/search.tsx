@@ -19,7 +19,8 @@ import {
   resetSearchResults,
 } from "@/store/shop/search-slice";
 import { getProductDetails } from "@/store/shop/product-slice";
-import { addToCart, getCart } from "@/store/shop/cart-slice";
+import { addToCart, getCart, addToLocalCart } from "@/store/shop/cart-slice";
+import { localCart } from "@/utils/localCart";
 import { Button } from "@/components/ui/button";
 
 const SearchProducts = () => {
@@ -45,11 +46,29 @@ const SearchProducts = () => {
   };
 
   const handleAddToCart = (id: string, totalStock: number) => {
+    // Check if user is authenticated
     if (!user || !user.id) {
-      alert("Please log in to add items to cart");
+      // Add to local storage for guest users
+      const localCartItems = localCart.get();
+      const existingItem = localCartItems.find(item => item.productId === id);
+      
+      if (existingItem && existingItem.quantity + 1 > totalStock) {
+        toast({
+          title: `Only ${totalStock} can be added to cart`,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      dispatch(addToLocalCart({ productId: id, quantity: 1 }));
+      toast({
+        title: "Added to cart",
+        description: "Sign in to save your cart and checkout",
+      });
       return;
     }
 
+    // Stock check for authenticated users
     const getCartItems = cartItems?.items || [];
     if (getCartItems.length) {
       const indexOfCurrentItem = getCartItems.findIndex(
@@ -80,6 +99,7 @@ const SearchProducts = () => {
           toast({
             title: "Item not added to cart",
             description: "Please try again",
+            variant: "destructive",
           });
         }
       }

@@ -8,10 +8,22 @@ interface CheckAuthProps {
 function CheckAuth({ isAuthenticated, user, children }: CheckAuthProps) {
   const location = useLocation();
 
+  const publicRoutes = ["/shop/home", "/shop/listing", "/shop/search"];
+  const isPublicRoute = publicRoutes.some((route) =>
+    location.pathname.includes(route)
+  );
+
   // Allow the auth pages to render during the authentication process
   if (location.pathname.includes("/auth/")) {
     if (isAuthenticated && user) {
-      // Only redirect if we're fully authenticated
+      // Check for post-login redirect
+      const redirectPath = sessionStorage.getItem('redirectAfterLogin');
+      if (redirectPath) {
+        sessionStorage.removeItem('redirectAfterLogin');
+        return <Navigate to={redirectPath} />;
+      }
+      
+      // Default redirects based on role
       if (user?.role === "admin") {
         return <Navigate to="/admin/dashboard" />;
       } else {
@@ -21,21 +33,26 @@ function CheckAuth({ isAuthenticated, user, children }: CheckAuthProps) {
     return <>{children}</>;
   }
 
-  // Root path redirects
+  // Redirecting to shop
   if (location.pathname === "/") {
-    if (!isAuthenticated) {
-      return <Navigate to="/auth/login" />;
-    } else {
-      if (user?.role === "admin") {
-        return <Navigate to="/admin/dashboard" />;
-      } else {
-        return <Navigate to="/shop/home" />;
-      }
+    if (isAuthenticated && user?.role === "admin") {
+      return <Navigate to="/admin/dashboard" />;
     }
+    return <Navigate to="/shop/home" />;
   }
 
-  // Protected routes checks
+  // Public routes allowed
+  if (isPublicRoute) {
+    // If authenticated admin tries to access shop, redirect to admin dashboard
+    if (isAuthenticated && user?.role === "admin") {
+      return <Navigate to="/admin/dashboard" />;
+    }
+    return <>{children}</>;
+  }
+
+  // Protected routes ( checkout, account, admin )
   if (!isAuthenticated) {
+    sessionStorage.setItem("redirectAfterLogin", location.pathname);
     return <Navigate to="/auth/login" />;
   }
 

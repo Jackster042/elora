@@ -33,9 +33,10 @@ import { AppDispatch } from "@/store/store";
 import { shoppingViewHeaderMenuItems } from "@/config";
 import { useState } from "react";
 import UserCartWrapper from "./cart-wrapper";
-import { getCart } from "@/store/shop/cart-slice";
+import { getCart, loadLocalCart } from "@/store/shop/cart-slice";
 import { Label } from "../ui/label";
 import { getFilteredProducts } from "@/store/shop/product-slice";
+import { localCart } from "@/utils/localCart";
 
 const MenuItems = () => {
   const navigate = useNavigate();
@@ -117,8 +118,8 @@ const MenuItems = () => {
 };
 
 const HeaderRightContent = () => {
-  const { user } = useSelector((state: RootState) => state.authStore);
-  const { cartItems } = useSelector(
+  const { user, isAuthenticated } = useSelector((state: RootState) => state.authStore);
+  const { cartItems, localCartItems } = useSelector(
       (state: RootState) => state.shoppingCartStore
   );
 
@@ -131,13 +132,57 @@ const HeaderRightContent = () => {
   };
 
   useEffect(() => {
-    dispatch(getCart(user.id));
-  }, [dispatch, user.id]);
+    if (isAuthenticated && user?.id) {
+      dispatch(getCart(user.id));
+    } else {
+      // Load local cart for guests
+      dispatch(loadLocalCart());
+    }
+  }, [dispatch, user?.id, isAuthenticated]);
 
-  // cartItems is already in the correct format from backend
-  const items = cartItems?.items || [];
+  // Use server cart for authenticated, local cart for guests
+  const items = isAuthenticated 
+    ? cartItems?.items || [] 
+    : localCartItems;
 
+  const cartCount = isAuthenticated
+    ? items.length
+    : localCart.getCount();
 
+  // Show login button for guests
+  if (!isAuthenticated) {
+    return (
+      <div className="flex lg:items-center lg:flex-row flex-col gap-4">
+        <Sheet open={openCartSheet} onOpenChange={() => setOpenCartSheet(false)}>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => setOpenCartSheet(true)}
+            className="relative"
+          >
+            <ShoppingCart className="h-6 w-6" />
+            {cartCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+                {cartCount}
+              </span>
+            )}
+            <span className="sr-only">user cart</span>
+          </Button>
+          <UserCartWrapper
+            setOpenCartSheet={setOpenCartSheet}
+            items={items}
+            isGuest={true}
+          />
+        </Sheet>
+
+        <Button onClick={() => navigate('/auth/login')} className="">
+          Sign In
+        </Button>
+      </div>
+    );
+  }
+
+  // Authenticated user UI
   return (
     <div className="flex lg:items-center lg:flex-row flex-col gap-4 cursor-pointer">
       {/* CART BUTTON */}
@@ -149,14 +194,15 @@ const HeaderRightContent = () => {
           className="relative"
         >
           <ShoppingCart className="h-6 w-6" />
-          <span className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center">
-            {items?.length || 0}
+          <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+            {cartCount}
           </span>
           <span className="sr-only">user cart</span>
         </Button>
         <UserCartWrapper
           setOpenCartSheet={setOpenCartSheet}
           items={items}
+          isGuest={false}
         />
       </Sheet>
       {/* USER DROPDOWN MENU */}

@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
 import { RootState } from "@/store/store";
 import { useSelector } from "react-redux";
-import { removeFromCart, updateQuantity } from "@/store/shop/cart-slice";
+import { removeFromCart, updateQuantity, updateLocalCart, removeFromLocalCart } from "@/store/shop/cart-slice";
 
 // HOOKS & UI
 import { PlusIcon, Trash } from "lucide-react";
@@ -14,7 +14,7 @@ import { toast } from "@/hooks/use-toast";
 // TYPES
 import { CartItem } from "@/types";
 
-const UserCartItemsContainer = ({ items }: { items: CartItem }) => {
+const UserCartItemsContainer = ({ items, isGuest = false }: { items: CartItem; isGuest?: boolean }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { user } = useSelector((state: RootState) => state.authStore);
   const { cartItems } = useSelector(
@@ -25,7 +25,14 @@ const UserCartItemsContainer = ({ items }: { items: CartItem }) => {
   );
 
   const handleCartItemDelete = (item: CartItem) => {
-    dispatch(removeFromCart({ userId: user?.id, productId: item?.productId }));
+    if (isGuest) {
+      dispatch(removeFromLocalCart(item.productId));
+      toast({
+        title: "Item removed from cart",
+      });
+    } else {
+      dispatch(removeFromCart({ userId: user?.id, productId: item?.productId }));
+    }
   };
 
   const handleUpdateQuantity = ({
@@ -36,51 +43,48 @@ const UserCartItemsContainer = ({ items }: { items: CartItem }) => {
     typeOfAction: "plus" | "minus";
     totalStock: number;
   }) => {
+    const newQuantity = typeOfAction === "plus" ? items?.quantity + 1 : items?.quantity - 1;
+
     if (typeOfAction === "plus") {
-      const getCartItems = cartItems?.items || [];
-      if (getCartItems.length) {
-        const indexOfCurrentCartItem = getCartItems.findIndex(
-          (item: CartItem) => item.productId === items?.productId
-        );
+      const getCurrentProductIndex = products.findIndex(
+        (product: any) => product._id === items?.productId
+      );
+      const getTotalStock = products[getCurrentProductIndex]?.totalStock || totalStock;
 
-        const getCurrentProductIndex = products.findIndex(
-          (product: any) => product._id === items?.productId
-        );
-        const getTotalStock = products[getCurrentProductIndex].totalStock;
-
-        if (indexOfCurrentCartItem > -1) {
-          const getQuantity = getCartItems[indexOfCurrentCartItem].quantity;
-          if (getQuantity + 1 > getTotalStock) {
-            toast({
-              title: `Only ${getTotalStock} can be added to cart`,
-              variant: "destructive",
-            });
-            return;
-          }
-        }
+      if (items.quantity + 1 > getTotalStock) {
+        toast({
+          title: `Only ${getTotalStock} can be added to cart`,
+          variant: "destructive",
+        });
+        return;
       }
     }
 
-    dispatch(
-      updateQuantity({
-        userId: user?.id,
-        productId: items?.productId,
-        quantity:
-          typeOfAction === "plus" ? items?.quantity + 1 : items?.quantity - 1,
-      })
-    ).then((data) => {
-      if (data?.payload?.success === true) {
-        toast({
-          title: "Quantity updated successfully",
-          description: "Quantity updated successfully",
-        });
-      } else {
-        toast({
-          title: "Quantity update failed",
-          description: "Quantity update failed",
-        });
-      }
-    });
+    if (isGuest) {
+      dispatch(updateLocalCart({ productId: items.productId, quantity: newQuantity }));
+      toast({
+        title: "Quantity updated",
+      });
+    } else {
+      dispatch(
+        updateQuantity({
+          userId: user?.id,
+          productId: items?.productId,
+          quantity: newQuantity,
+        })
+      ).then((data) => {
+        if (data?.payload?.success === true) {
+          toast({
+            title: "Quantity updated successfully",
+          });
+        } else {
+          toast({
+            title: "Quantity update failed",
+            variant: "destructive",
+          });
+        }
+      });
+    }
   };
 
   // Find the product to get totalStock

@@ -9,7 +9,7 @@ import {
   getFilteredProducts,
   getProductDetails,
 } from "@/store/shop/product-slice";
-import { addToCart, getCart } from "@/store/shop/cart-slice";
+import { addToCart, getCart, addToLocalCart } from "@/store/shop/cart-slice";
 import { useToast } from "@/hooks/use-toast";
 import { getFeatureImage } from "@/store/shop/common-slice";
 
@@ -110,11 +110,18 @@ const ShoppingHome = () => {
   };
 
   const handleAddToCart = (id: string) => {
+    // Check if user is authenticated
     if (!user || !user.id) {
-      alert("Please log in to add items to cart");
+      // Add to local storage for guest users
+      dispatch(addToLocalCart({ productId: id, quantity: 1 }));
+      toast({
+        title: "Added to cart",
+        description: "Sign in to save your cart and checkout",
+      });
       return;
     }
 
+    // Existing authenticated user logic
     dispatch(addToCart({ userId: user.id, productId: id, quantity: 1 })).then(
       (data) => {
         if (data?.payload?.success) {
@@ -127,6 +134,7 @@ const ShoppingHome = () => {
           toast({
             title: "Item not added to cart",
             description: "Please try again",
+            variant: "destructive",
           });
         }
       }

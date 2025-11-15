@@ -1,5 +1,6 @@
 // REACT
-import { Fragment, useState } from "react";
+import { Fragment, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 // HOOKS
 import { toast } from "@/hooks/use-toast";
@@ -16,6 +17,8 @@ import UserCartItemsContainer from "@/components/shopping-view/cart-items-contai
 import { AppDispatch } from "@/store/store";
 import { useDispatch, useSelector } from "react-redux";
 import { createNewOrder } from "@/store/order-slice";
+import { mergeGuestCart, getCart } from "@/store/shop/cart-slice";
+import { localCart } from "@/utils/localCart";
 
 const ShoppingCheckout = () => {
   const [currentSelectedAddress, setCurrentSelectedAddress] =
@@ -24,9 +27,31 @@ const ShoppingCheckout = () => {
 
   const { approvalURL } = useSelector((state: any) => state.orderStore);
   const { cartItems } = useSelector((state: any) => state.shoppingCartStore);
-  const { user } = useSelector((state: any) => state.authStore);
+  const { user, isAuthenticated } = useSelector((state: any) => state.authStore);
 
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+
+  // Protect checkout - require authentication
+  useEffect(() => {
+    if (!isAuthenticated) {
+      sessionStorage.setItem('redirectAfterLogin', '/shop/checkout');
+      navigate('/auth/login');
+      return;
+    }
+
+    // Merge guest cart if exists
+    const hasLocalCart = localCart.hasItems();
+    if (hasLocalCart && user?.id) {
+      dispatch(mergeGuestCart(user.id)).then(() => {
+        dispatch(getCart(user.id));
+        toast({
+          title: "Cart merged",
+          description: "Your cart items have been synced",
+        });
+      });
+    }
+  }, [isAuthenticated, user, navigate, dispatch]);
 
   const totalCartAmount =
     cartItems && cartItems.items && cartItems.items.length > 0

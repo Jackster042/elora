@@ -24,7 +24,8 @@ import ShoppingProductTile from "@/components/shopping-view/product-tile";
 import { sortOptions } from "@/config";
 import { useSearchParams } from "react-router-dom";
 import ProductDetailsDialog from "@/components/shopping-view/product-details";
-import { addToCart, getCart } from "@/store/shop/cart-slice";
+import { addToCart, getCart, addToLocalCart } from "@/store/shop/cart-slice";
+import { localCart } from "@/utils/localCart";
 import { useToast } from "@/hooks/use-toast";
 interface Product {
   _id: string;
@@ -107,12 +108,29 @@ const ShoppingListing = () => {
   };
 
   const handleAddToCart = (id: string, totalStock: number) => {
+    // Check if user is authenticated
     if (!user || !user.id) {
-      console.error("User not logged in or user ID is missing");
-      alert("Please log in to add items to cart");
+      // Add to local storage for guest users
+      const localCartItems = localCart.get();
+      const existingItem = localCartItems.find(item => item.productId === id);
+      
+      if (existingItem && existingItem.quantity + 1 > totalStock) {
+        toast({
+          title: `Only ${totalStock} can be added to cart`,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      dispatch(addToLocalCart({ productId: id, quantity: 1 }));
+      toast({
+        title: "Added to cart",
+        description: "Sign in to save your cart and checkout",
+      });
       return;
     }
 
+    // Stock check for authenticated users
     const getCartItems = cartItems?.items || [];
     if (getCartItems.length) {
       const indexOfCurrentItem = getCartItems.findIndex(
@@ -143,6 +161,7 @@ const ShoppingListing = () => {
           toast({
             title: "Item not added to cart",
             description: "Please try again",
+            variant: "destructive",
           });
         }
       }

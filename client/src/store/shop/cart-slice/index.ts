@@ -1,8 +1,10 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios, { AxiosError } from "axios";
+import { localCart, LocalCartItem } from "@/utils/localCart";
 
 interface CartState {
   cartItems: any[];
+  localCartItems: LocalCartItem[];
   isLoading: boolean;
   error: string | null;
 }
@@ -15,6 +17,7 @@ interface AuthError {
 
 const initialState: CartState = {
   cartItems: [],
+  localCartItems: [],
   isLoading: false,
   error: null,
 };
@@ -123,10 +126,73 @@ export const removeFromCart = createAsyncThunk(
   }
 );
 
+// MERGE GUEST CART
+export const mergeGuestCart = createAsyncThunk(
+  "cart/mergeGuestCart",
+  async (userId: string, { rejectWithValue }) => {
+    try {
+      const localItems = localCart.get();
+
+      if (localItems.length === 0) {
+        return { merged: false };
+      }
+
+      // Add each local item to server cart
+      for (const item of localItems) {
+        await axios.post(`${API_URL}/api/shop/cart/add`, {
+          userId,
+          productId: item.productId,
+          quantity: item.quantity,
+        });
+      }
+
+      // Clear local cart after successful merge
+      localCart.clear();
+
+      // Fetch updated cart from server
+      const response = await axios.get(`${API_URL}/api/shop/cart/get/${userId}`);
+
+      return { merged: true, data: response.data.data };
+    } catch (error) {
+      console.error(error, "error from MERGE GUEST CART - FRONTEND");
+      return rejectWithValue({
+        message: (error as AxiosError).message,
+        code: (error as AxiosError).code,
+        response: (error as AxiosError).response?.data,
+      });
+    }
+  }
+);
+
 const shopCartSlice = createSlice({
   name: "shoppingCart",
   initialState,
-  reducers: {},
+  reducers: {
+    // Guest cart actions (synchronous, no API calls)
+    addToLocalCart: (state, action: PayloadAction<{ productId: string; quantity: number }>) => {
+      localCart.add(action.payload.productId, action.payload.quantity);
+      state.localCartItems = localCart.get();
+    },
+
+    updateLocalCart: (state, action: PayloadAction<{ productId: string; quantity: number }>) => {
+      localCart.update(action.payload.productId, action.payload.quantity);
+      state.localCartItems = localCart.get();
+    },
+
+    removeFromLocalCart: (state, action: PayloadAction<string>) => {
+      localCart.remove(action.payload);
+      state.localCartItems = localCart.get();
+    },
+
+    loadLocalCart: (state) => {
+      state.localCartItems = localCart.get();
+    },
+
+    clearLocalCart: (state) => {
+      localCart.clear();
+      state.localCartItems = [];
+    },
+  },
   extraReducers: (builder) => {
     // ADD TO CART
     builder.addCase(addToCart.pending, (state) => {
@@ -187,8 +253,31 @@ const shopCartSlice = createSlice({
       state.error =
         (action.payload as AuthError)?.message || "An error occurred";
     });
+
+    // MERGE GUEST CART
+    builder.addCase(mergeGuestCart.pending, (state) => {
+      state.isLoading = true;
+    });
+    builder.addCase(mergeGuestCart.fulfilled, (state, action) => {
+      state.isLoading = false;
+      if (action.payload.merged) {
+        state.cartItems = action.payload.data;
+        state.localCartItems = []; // Clear local cart items from state
+      }
+    });
+    builder.addCase(mergeGuestCart.rejected, (state, action) => {
+      state.isLoading = false;
+      state.error =
+        (action.payload as AuthError)?.message || "An error occurred";
+    });
   },
 });
 
-export const {} = shopCartSlice.actions;
+export const {
+  addToLocalCart,
+  updateLocalCart,
+  removeFromLocalCart,
+  loadLocalCart,
+  clearLocalCart,
+} = shopCartSlice.actions;
 export default shopCartSlice.reducer;
