@@ -5,7 +5,6 @@ const path = require("path");
 
 const app = express();
 
-
 // ROUTES
 const authRoutes = require("./routes/auth/auth-routes");
 const adminRoutes = require("./routes/admin/productRoutes");
@@ -20,25 +19,21 @@ const reviewRoutes = require("./routes/shop/reviewRoutes");
 
 const featureRoutes = require("./routes/common/featureRoutes");
 
-
 // MIDDLEWARES
 app.use(
-    cors({
-        origin: [
-            "https://e-store-client.onrender.com",
-            "http://localhost:5173"
-        ],
-        credentials: true,
-        methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-        allowedHeaders: [
-            "Content-Type",
-            "Authorization",
-            "Cache-Control",  // Explicitly allow Cache-Control
-            "X-Requested-With",
-            "Accept"
-        ],
-        exposedHeaders: ["Authorization"]
-    })
+  cors({
+    origin: ["https://e-store-client.onrender.com", "http://localhost:5173"],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "Cache-Control", // Explicitly allow Cache-Control
+      "X-Requested-With",
+      "Accept",
+    ],
+    exposedHeaders: ["Authorization"],
+  })
 );
 
 // Explicitly handle OPTIONS requests
@@ -46,11 +41,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+app.options("*", cors());
 
-app.options('*', cors());
-
-
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // ROUTES
 app.use("/api/auth", authRoutes);
 app.use("/api/admin/products", adminRoutes);

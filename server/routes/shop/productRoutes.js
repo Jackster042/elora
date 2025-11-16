@@ -6,7 +6,10 @@ const {
   getProductDetails,
 } = require("../../controllers/shop/shopController");
 
-router.get("/get", getFilteredProducts);
-router.get("/get/:id", getProductDetails);
+const { guestBrowsingLimiter } = require("../../middleware/rateLimiter");
+
+// Apply rate limiting to product browsing
+router.get("/get", guestBrowsingLimiter, getFilteredProducts);
+router.get("/get/:id", guestBrowsingLimiter, getProductDetails);
 
 module.exports = router;

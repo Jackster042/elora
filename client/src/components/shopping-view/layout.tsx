@@ -1,6 +1,7 @@
 import { Outlet } from "react-router-dom";
 import ShoppingHeader from "./header";
 import Footer from "../common/footer";
+import { CookieConsent } from "../common/cookie-consent";
 
 function ShoppingLayout() {
   return (
@@ -11,6 +12,7 @@ function ShoppingLayout() {
         <Outlet />
       </main>
       <Footer />
+      <CookieConsent />
     </div>
   );
 }

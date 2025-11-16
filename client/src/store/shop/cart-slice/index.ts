@@ -170,7 +170,11 @@ const shopCartSlice = createSlice({
   reducers: {
     // Guest cart actions (synchronous, no API calls)
     addToLocalCart: (state, action: PayloadAction<{ productId: string; quantity: number }>) => {
-      localCart.add(action.payload.productId, action.payload.quantity);
+      const result = localCart.add(action.payload.productId, action.payload.quantity);
+      if (!result.success) {
+        // Store error in state for UI to display
+        state.error = result.message || 'Cart limit exceeded';
+      }
       state.localCartItems = localCart.get();
     },
 
