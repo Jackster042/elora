@@ -42,12 +42,8 @@ class PaymentService {
       console.log("[DEMO MODE] Creating mock payment");
       const mockOrder = await mockPaymentService.createOrder(paymentData);
 
-      // Extract approval URL from mock response
-      const approvalURL =
-        mockOrder.links.find((link) => link.rel === "approve")?.href || null;
-
       return {
-        // approvalURL,
+        approvalURL: null,
         isDemo: true,
         orderId: mockOrder.id,
         status: mockOrder.status,
