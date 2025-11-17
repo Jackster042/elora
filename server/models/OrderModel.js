@@ -28,6 +28,7 @@ const OrderSchema = new Schema({
   orderUpdateDate: Date,
   paymentId: String,
   payerId: String,
+  isDemoOrder: { type: Boolean, default: false },
 });
 
 const OrderModel = model("Order", OrderSchema);

@@ -1,4 +1,4 @@
-const paypal = require("../../utils/paypal");
+const paymentService = require("../../services/paymentService");
 const OrderModel = require("../../models/OrderModel");
 const ProductModel = require("../../models/ProductModels");
 const CartModel = require("../../models/CartModel");
@@ -28,7 +28,7 @@ exports.createOrder = async (req, res) => {
       payerId,
     } = req.body;
 
-    const create_payment_json = {
+    const paymentData = {
       intent: "sale",
       payer: {
         payment_method: "paypal",
@@ -40,16 +40,19 @@ exports.createOrder = async (req, res) => {
       transactions: [
         {
           item_list: {
-            items: cartItems.map((item) => ({
-              name: item.title,
-              sku: item.productId,
-              price: item.price.toFixed(2),
-              currency: "USD",
-              quantity: item.quantity,
-            })),
+            items: cartItems.map((item) => {
+              const price = parseFloat(item.price) || 0;
+              return {
+                name: item.title,
+                sku: item.productId,
+                price: price.toFixed(2),
+                currency: "USD",
+                quantity: item.quantity,
+              };
+            }),
           },
           amount: {
-            total: totalAmount.toFixed(2),
+            total: (parseFloat(totalAmount) || 0).toFixed(2),
             currency: "USD",
           },
           description: "Payment for order",
@@ -57,44 +60,45 @@ exports.createOrder = async (req, res) => {
       ],
     };
 
-    paypal.payment.create(create_payment_json, async (error, paymentInfo) => {
-      if (error) {
-        console.error(error, "error from CREATE PAYMENT - BACKEND");
-        return res.status(500).json({
-          success: false,
-          message: "Error from `CREATE PAYMENT - BACKEND`",
-          error: error.message,
-        });
-      } else {
-        const newOrder = new OrderModel({
-          userId,
-          cartId,
-          cartItems,
-          addressInfo,
-          orderStatus,
-          paymentMethod,
-          paymentStatus,
-          totalAmount,
-          orderDate,
-          orderUpdateDate,
-          paymentId,
-          payerId,
-        });
+    try {
+      const paymentResult = await paymentService.createPayment(paymentData);
 
-        await newOrder.save();
+      const newOrder = new OrderModel({
+        userId,
+        cartId,
+        cartItems,
+        addressInfo,
+        orderStatus,
+        paymentMethod,
+        paymentStatus,
+        totalAmount,
+        orderDate,
+        orderUpdateDate,
+        paymentId,
+        payerId,
+        isDemoOrder: paymentResult.isDemo || false,
+      });
 
-        const approvalURL = paymentInfo.links.find(
-          (link) => link.rel === "approval_url"
-        ).href;
+      await newOrder.save();
 
-        return res.json({
-          success: true,
-          message: "Order created successfully",
-          orderId: newOrder._id,
-          approvalURL,
-        });
-      }
-    });
+      const response = {
+        success: true,
+        message: "Order created successfully",
+        orderId: newOrder._id,
+        approvalURL: paymentResult.approvalURL,
+        isDemo: paymentResult.isDemo || false,
+      };
+
+      console.log('[ORDER CONTROLLER] Sending response:', JSON.stringify(response));
+      return res.json(response);
+    } catch (error) {
+      console.error(error, "error from CREATE PAYMENT - BACKEND");
+      return res.status(500).json({
+        success: false,
+        message: "Error from CREATE PAYMENT - BACKEND",
+        error: error.message,
+      });
+    }
   } catch (error) {
     console.error(error, "error from CREATE ORDER - BACKEND");
     return res.status(500).json({
@@ -117,11 +121,25 @@ exports.capturePayment = async (req, res) => {
       });
     }
 
+    // Capture payment using payment service (handles both demo and real PayPal)
+    if (!order.isDemoOrder) {
+      try {
+        await paymentService.capturePayment(paymentId, payerId);
+      } catch (captureError) {
+        console.error(captureError, "Payment capture failed");
+        return res.status(500).json({
+          success: false,
+          message: "Payment capture failed",
+          error: captureError.message,
+        });
+      }
+    }
+
     order.paymentId = paymentId;
     order.payerId = payerId;
     order.paymentStatus = "paid";
     order.orderStatus = "completed";
-    orderUpdateDate = new Date();
+    order.orderUpdateDate = new Date();
 
     // UPDATE STOCK QUANTITY IN THE DATABASE AFTER THE PAYMENT IS CAPTURED
     for (let item of order.cartItems) {

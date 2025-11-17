@@ -12,11 +12,15 @@ import imgAccount from "../../assets/account.jpg";
 import { Button } from "@/components/ui/button";
 import Address from "@/components/shopping-view/address";
 import UserCartItemsContainer from "@/components/shopping-view/cart-items-container";
-
+import DemoPaymentModal from "@/components/common/demo-payment-modal";
 // REDUX
 import { AppDispatch } from "@/store/store";
 import { useDispatch, useSelector } from "react-redux";
-import { createNewOrder } from "@/store/order-slice";
+import {
+  createNewOrder,
+  capturePayment,
+  resetOrderState,
+} from "@/store/order-slice";
 import { mergeGuestCart, getCart } from "@/store/shop/cart-slice";
 import { localCart } from "@/utils/localCart";
 
@@ -24,10 +28,16 @@ const ShoppingCheckout = () => {
   const [currentSelectedAddress, setCurrentSelectedAddress] =
     useState<any>(null);
   const [isPaymentStarted, setIsPaymentStarted] = useState<boolean>(false);
+  const [showDemoPaymentModal, setShowDemoPaymentModal] =
+    useState<boolean>(false);
 
-  const { approvalURL } = useSelector((state: any) => state.orderStore);
+  const { approvalURL, isDemo, orderId } = useSelector(
+    (state: any) => state.orderStore
+  );
   const { cartItems } = useSelector((state: any) => state.shoppingCartStore);
-  const { user, isAuthenticated } = useSelector((state: any) => state.authStore);
+  const { user, isAuthenticated } = useSelector(
+    (state: any) => state.authStore
+  );
 
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
@@ -35,8 +45,8 @@ const ShoppingCheckout = () => {
   // Protect checkout - require authentication
   useEffect(() => {
     if (!isAuthenticated) {
-      sessionStorage.setItem('redirectAfterLogin', '/shop/checkout');
-      navigate('/auth/login');
+      sessionStorage.setItem("redirectAfterLogin", "/shop/checkout");
+      navigate("/auth/login");
       return;
     }
 
@@ -114,6 +124,14 @@ const ShoppingCheckout = () => {
     dispatch(createNewOrder(orderData)).then((data) => {
       if (data?.payload?.success) {
         setIsPaymentStarted(true);
+        // If demo mode, show modal instead of redirecting
+        if (data?.payload?.isDemo) {
+          // Small delay to ensure modal shows properly
+          setTimeout(() => {
+            setShowDemoPaymentModal(true);
+          }, 100);
+        }
+        // For non-demo mode, the useEffect will handle redirect
       } else {
         setIsPaymentStarted(false);
         toast({
@@ -124,12 +142,88 @@ const ShoppingCheckout = () => {
     });
   };
 
-  if (approvalURL) {
-    window.location.href = approvalURL;
-  }
+  const handleDemoPaymentSuccess = (paymentId: string, payerId: string) => {
+    if (orderId) {
+      dispatch(
+        capturePayment({
+          orderId: orderId,
+          paymentId,
+          payerId,
+        })
+      ).then((data) => {
+        if (data?.payload?.success) {
+          // Fetch updated cart (should be empty after successful order)
+          dispatch(getCart(user.id));
+
+          toast({
+            title: "Payment Successful!",
+            description: "Your demo order has been placed successfully.",
+          });
+
+          // Navigate to home page
+          setTimeout(() => {
+            navigate("/shop/home");
+          }, 1500);
+        } else {
+          toast({
+            title: "Error",
+            description: "Failed to capture demo payment",
+            variant: "destructive",
+          });
+        }
+      });
+    }
+  };
+
+  const handleDemoPaymentError = () => {
+    toast({
+      title: "Payment Failed",
+      description: "Demo payment simulation failed. Please try again.",
+      variant: "destructive",
+    });
+    setIsPaymentStarted(false);
+    setShowDemoPaymentModal(false);
+  };
+
+  const handleCloseModal = () => {
+    setShowDemoPaymentModal(false);
+    setIsPaymentStarted(false);
+    dispatch(resetOrderState());
+  };
+
+  // Handle real PayPal redirect (only for non-demo mode)
+  useEffect(() => {
+    console.log("[CHECKOUT] useEffect triggered:", {
+      approvalURL,
+      isDemo,
+      isPaymentStarted,
+      showDemoPaymentModal,
+    });
+
+    // Only redirect if we have an approval URL, it's not demo mode, and payment has started
+    if (approvalURL && !isDemo && isPaymentStarted) {
+      console.log("[CHECKOUT] Redirecting to PayPal:", approvalURL);
+      window.location.href = approvalURL;
+    } else if (approvalURL && isDemo) {
+      console.log(
+        "[CHECKOUT] Demo mode detected, showing modal instead of redirecting"
+      );
+    } else {
+      console.log("[CHECKOUT] No redirect conditions met");
+    }
+  }, [approvalURL, isDemo, isPaymentStarted]);
 
   return (
     <Fragment>
+      {/* Demo Payment Modal */}
+      <DemoPaymentModal
+        isOpen={showDemoPaymentModal}
+        onClose={handleCloseModal}
+        onSuccess={handleDemoPaymentSuccess}
+        onError={handleDemoPaymentError}
+        totalAmount={totalCartAmount || 0}
+      />
+
       <div className="flex flex-col">
         {/* CHECKOUT HEADER */}
         <div className="relative w-full h-[300px] object-cover overflow-hidden">
@@ -172,9 +266,10 @@ const ShoppingCheckout = () => {
               <Button
                 className="w-full mt-6"
                 onClick={handleInitiatePaypalPayment}
+                disabled={isPaymentStarted}
               >
                 {/* Continue to PayPal */}
-                {isPaymentStarted ? "Processing..." : "Continue to PayPal"}
+                {isPaymentStarted ? "Processing..." : "Continue to Payment"}
               </Button>
             </div>
           </div>

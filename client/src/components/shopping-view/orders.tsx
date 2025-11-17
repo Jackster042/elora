@@ -28,7 +28,7 @@ import ShoppingOrderDetailsView from "./order-details";
 import {
   getAllOrdersByUser,
   getOrderDetails,
-  resetOrderDetails,
+  resetOrderState,
 } from "@/store/order-slice";
 
 const ShoppingOrders = () => {
@@ -103,7 +103,7 @@ const ShoppingOrders = () => {
                           open={openOrderDetails}
                           onOpenChange={() => {
                             setOpenOrderDetails(false);
-                            dispatch(resetOrderDetails());
+                            dispatch(resetOrderState());
                           }}
                         >
                           <Button
