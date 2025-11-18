@@ -1,11 +1,14 @@
 import { Outlet } from "react-router-dom";
 import ShoppingHeader from "./header";
 import Footer from "../common/footer";
+import DemoBanner from "../common/demo-banner";
 import { CookieConsent } from "../common/cookie-consent";
 
 function ShoppingLayout() {
   return (
-    <div className="flex flex-col min-h-screen bg-white">
+    <div className="flex flex-col min-h-screen bg-white overflow-hidden">
+      {/* Demo mode banner */}
+      <DemoBanner />
       {/* common header */}
       <ShoppingHeader />
       <main className="flex-1 flex flex-col w-full">

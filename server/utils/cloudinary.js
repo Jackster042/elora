@@ -24,9 +24,7 @@ async function uploadToCloudinary(file) {
       dataUrl = file;
     } else if (file && file.buffer) {
       // File object with buffer - convert to data URL
-      dataUrl = `data:${file.mimetype};base64,${file.buffer.toString(
-        "base64"
-      )}`;
+      dataUrl = `data:${file.mimetype};base64,${file.buffer.toString("base64")}`;
     } else {
       throw new Error("Invalid file format");
     }

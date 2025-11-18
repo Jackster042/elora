@@ -34,17 +34,27 @@ const ShoppingOrderDetailsView = ({ orderDetails }: { orderDetails: any }) => {
           </div>
           <div className="flex mt-6 items-center justify-between">
             <p className="font-medium">Order Status</p>
-            <Badge
-              className={`py-1 px-3 ${
-                orderDetails?.orderStatus === "completed"
-                  ? "bg-green-500"
-                  : orderDetails?.orderStatus === "cancelled"
-                  ? "bg-red-600"
-                  : "bg-black"
-              }`}
-            >
-              {orderDetails?.orderStatus}
-            </Badge>
+            <div className="flex gap-2">
+              <Badge
+                className={`py-1 px-3 ${
+                  orderDetails?.orderStatus === "completed"
+                    ? "bg-green-500"
+                    : orderDetails?.orderStatus === "cancelled"
+                    ? "bg-red-600"
+                    : "bg-black"
+                }`}
+              >
+                {orderDetails?.orderStatus}
+              </Badge>
+              {orderDetails?.isDemoOrder && (
+                <Badge
+                  variant="secondary"
+                  className="bg-yellow-100 text-yellow-800 py-1 px-3"
+                >
+                  DEMO ORDER
+                </Badge>
+              )}
+            </div>
           </div>
         </div>
         <Separator />

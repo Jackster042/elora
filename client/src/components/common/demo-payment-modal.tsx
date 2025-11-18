@@ -71,8 +71,14 @@ const DemoPaymentModal = ({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && paymentStatus === "idle" && onClose()}>
-      <DialogContent className="sm:max-w-[500px]" onInteractOutside={(e) => e.preventDefault()}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => !open && paymentStatus === "idle" && onClose()}
+    >
+      <DialogContent
+        className="sm:max-w-[500px]"
+        onInteractOutside={(e) => e.preventDefault()}
+      >
         <DialogHeader>
           <div className="flex items-center justify-between">
             <DialogTitle>Demo Payment Processor</DialogTitle>
@@ -172,7 +178,11 @@ const DemoPaymentModal = ({
               >
                 Simulate Failed Payment
               </Button>
-              <Button onClick={handleClose} variant="ghost" className="w-full">
+              <Button
+                onClick={handleClose}
+                variant="ghost"
+                className="w-full"
+              >
                 Cancel
               </Button>
             </div>

@@ -9,6 +9,7 @@ interface AuthError {
 
 interface OrderState {
   approvalURL: string | null;
+  isDemo: boolean;
   orderId: any[] | null;
   orderList: any[] | null;
   orderDetails: any | null;
@@ -18,6 +19,7 @@ interface OrderState {
 
 const initialState: OrderState = {
   approvalURL: null,
+  isDemo: false,
   orderId: null,
   orderList: [],
   orderDetails: null,
@@ -119,8 +121,13 @@ const orderSlice = createSlice({
   name: "shoppingOrderSlice",
   initialState,
   reducers: {
-    resetOrderState: (state) => {
+    resetOrderDetails: (state) => {
       state.orderDetails = null;
+    },
+    resetOrderState: (state) => {
+      state.approvalURL = null;
+      state.isDemo = false;
+      state.orderId = null;
     },
   },
   extraReducers: (builder) => {
@@ -131,6 +138,7 @@ const orderSlice = createSlice({
     builder.addCase(createNewOrder.fulfilled, (state, action) => {
       state.loading = false;
       state.approvalURL = action.payload.approvalURL;
+      state.isDemo = action.payload.isDemo || false;
       state.orderId = action.payload.orderId;
       sessionStorage.setItem(
         "currentOrderId",
@@ -140,6 +148,7 @@ const orderSlice = createSlice({
     builder.addCase(createNewOrder.rejected, (state, action) => {
       state.loading = false;
       state.approvalURL = null;
+      state.isDemo = false;
       state.orderId = null;
       state.error =
         (action.payload as AuthError)?.message || "An error occurred";
@@ -175,5 +184,5 @@ const orderSlice = createSlice({
   },
 });
 
-export const { resetOrderState } = orderSlice.actions;
+export const { resetOrderDetails, resetOrderState } = orderSlice.actions;
 export default orderSlice.reducer;
