@@ -26,21 +26,18 @@ class MockPaymentService {
    * @returns {Promise<Object>} - Mock order creation response
    */
   async createOrder(orderData) {
-    // Simulate realistic API delay
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     const orderId = generateOrderId();
 
     console.log("[DEMO MODE] Creating mock PayPal order:", orderId);
 
-    // Return structure similar to PayPal API response
     return {
       id: orderId,
       status: "CREATED",
       links: [
         {
           href: `http://demo-payment/${orderId}`,
-          // href: `http://localhost:5173/shop/home`,
           rel: "approve",
           method: "GET",
         },

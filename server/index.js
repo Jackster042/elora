@@ -20,15 +20,35 @@ const reviewRoutes = require("./routes/shop/reviewRoutes");
 const featureRoutes = require("./routes/common/featureRoutes");
 
 // MIDDLEWARES
+// Dynamic CORS configuration for development and production
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:3001",
+  process.env.CLIENT_URL, // Will be set in production
+].filter(Boolean); // Remove undefined values
+
 app.use(
   cors({
-    origin: ["https://e-store-client.onrender.com", "http://localhost:5173"],
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or Postman)
+      if (!origin) return callback(null, true);
+
+      // Check if origin is in allowed list or matches Vercel preview deployments
+      if (
+        allowedOrigins.indexOf(origin) !== -1 ||
+        origin.includes("vercel.app")
+      ) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: [
       "Content-Type",
       "Authorization",
-      "Cache-Control", // Explicitly allow Cache-Control
+      "Cache-Control",
       "X-Requested-With",
       "Accept",
     ],
