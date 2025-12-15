@@ -104,12 +104,12 @@ exports.login = async (req, res, next) => {
         success: true,
         message: "Logged in successfully",
         user: {
-          email: userData.email,
+          // email: userData.email,
           role: userData.role,
           id: userData._id,
           userName: userData.userName,
         },
-        token,
+        // token,
       });
   } catch (error) {
     console.error(error, "error from LOGIN BACKEND");
