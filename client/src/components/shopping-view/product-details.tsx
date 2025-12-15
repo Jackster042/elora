@@ -53,7 +53,7 @@ const ProductDetailsDialog = ({
       return;
     }
 
-    const getCartItems = cartItems || [];
+    const getCartItems = cartItems?.items ?? [];
     if (getCartItems.length) {
       const indexOfCurrentItem = getCartItems.findIndex(
         (item: any) => item.productId === id

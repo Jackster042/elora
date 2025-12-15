@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 
@@ -16,7 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import { loginUser } from "@/store/auth-slice";
 import { AppDispatch } from "@/store/store";
 import { useDispatch } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { mergeGuestCart, getCart } from "@/store/shop/cart-slice";
 import { localCart } from "@/utils/localCart";
 
@@ -28,9 +27,7 @@ const initialState = {
 const AuthLogin = () => {
   const [formData, setFormdata] = useState(initialState);
   const dispatch = useDispatch<AppDispatch>();
-  const navigate = useNavigate();
   const { toast } = useToast();
-  const location = useLocation();
   const { isAuthenticated, user } = useSelector(
     (state: RootState) => state.authStore
   );
@@ -52,7 +49,7 @@ const AuthLogin = () => {
           });
         }
       })
-      .catch((error) => {
+      .catch(() => {
         // Handle error silently or log to monitoring service
       });
   }

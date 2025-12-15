@@ -2,8 +2,9 @@ export interface CartItem {
   image: string;
   title: string;
   price: number;
-  salePrice: number;
+  salePrice?: number;
   productId: string;
   quantity: number;
-  _id: string;
+  // Backend cart items may not include an _id; treat productId as the stable identifier.
+  _id?: string;
 }

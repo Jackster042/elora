@@ -1,7 +1,5 @@
 // REACT
 import { useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { RootState, AppDispatch } from "@/store/store";
 import { useState, useEffect } from "react";
 
 // COMPONENTS
@@ -24,7 +22,6 @@ const UserCartWrapper = ({
   isGuest?: boolean;
 }) => {
   const navigate = useNavigate();
-  const dispatch = useDispatch<AppDispatch>();
   const [enrichedItems, setEnrichedItems] = useState<CartItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 

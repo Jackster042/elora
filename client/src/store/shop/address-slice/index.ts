@@ -126,7 +126,7 @@ const addressSlice = createSlice({
     builder.addCase(addAddress.pending, (state) => {
       state.isLoading = true;
     });
-    builder.addCase(addAddress.fulfilled, (state, action) => {
+    builder.addCase(addAddress.fulfilled, (state) => {
       state.isLoading = false;
       // state.addressList = action.payload.data;
     });
