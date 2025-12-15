@@ -87,10 +87,18 @@ exports.login = async (req, res, next) => {
 
     const { password, __v, ...userData } = user._doc;
 
+    const isProd = process.env.NODE_ENV === "production";
+
+    // NOTE: In production, the frontend (Vercel) and backend (Render) are on different domains.
+    // To allow cookies to be sent on XHR/fetch with `withCredentials: true`, we need:
+    //   - sameSite: 'none'
+    //   - secure: true
     res
       .cookie("token", token, {
         httpOnly: true,
-        secure: false,
+        secure: isProd,
+        sameSite: isProd ? "none" : "lax",
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       })
       .json({
         success: true,
@@ -116,7 +124,13 @@ exports.login = async (req, res, next) => {
 //  LOGOUT USER
 
 exports.logout = async (req, res, next) => {
+  const isProd = process.env.NODE_ENV === "production";
+
   res
-    .clearCookie("token")
+    .clearCookie("token", {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: isProd ? "none" : "lax",
+    })
     .json({ success: true, message: "Logged out successfully" });
 };
