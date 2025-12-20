@@ -96,13 +96,6 @@ Execute unit/functional tests via Newman or Postman Runner.
 
 ---
 
-### 📜 License
-
-
-MIT © 2025 Nemanja Stojanovic — [View Repository](https://github.com/Jackster042/elora)
-
----
-
 ### 🌟 Roadmap (v2)
 
 Stripe integration as a payment alternative.
