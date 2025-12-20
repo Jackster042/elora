@@ -98,7 +98,8 @@ Execute unit/functional tests via Newman or Postman Runner.
 
 ### 📜 License
 
-MIT © 2025 [Nemanja Stojanovic](https://github.com/Jackster042)
+
+MIT © 2025 Nemanja Stojanovic — [View Repository](https://github.com/Jackster042/elora)
 
 ---
 
