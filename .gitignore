@@ -70,4 +70,8 @@ mongodb.log
 .next
 .qodo
 
+# Docs (keep docs/README.md public, ignore other markdown docs)
+docs/**/*.md
+!docs/README.md
+
 .early.coverage
