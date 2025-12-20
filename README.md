@@ -1,7 +1,6 @@
 # Elora
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![CI/CD](https://github.com/yourusername/elora/actions/workflows/main.yml/badge.svg)](https://github.com/yourusername/elora/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)]
 [![Deployment](https://img.shields.io/badge/Deployed%20on-Vercel-black)](https://elora.vercel.app)
 
 **A minimalist e-commerce platform for fashion enthusiasts.**  
@@ -40,7 +39,7 @@ Elora offers a seamless shopping experience with a focus on UX, global payments 
 1. Clone the repo:
 
    ```bash
-   git clone https://github.com/yourusername/elora.git
+   git clone https://github.com/Jackster042/elora.git
    cd elora
 
    ```
@@ -97,21 +96,9 @@ Execute unit/functional tests via Newman or Postman Runner.
 
 ---
 
-### 🤝 Contributing
-
-Fork the repository.
-
-Follow the style guide (e.g., React hooks conventions, Tailwind class sorting).
-
-Test your changes with npm test.
-
-Open a Pull Request with a clear description.
-
----
-
 ### 📜 License
 
-This project is licensed under the MIT License. See LICENSE.
+MIT © 2025 [Nemanja Stojanovic](https://github.com/Jackster042)
 
 ---
 
