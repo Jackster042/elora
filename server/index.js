@@ -35,7 +35,10 @@ app.use(
       if (!origin) return callback(null, true);
 
       // Check if origin is in allowed list or matches Vercel preview deployments
-      if (allowedOrigins.indexOf(origin) !== -1 || origin.includes("vercel.app")) {
+      if (
+        allowedOrigins.indexOf(origin) !== -1 ||
+        origin.includes("vercel.app")
+      ) {
         callback(null, true);
       } else {
         callback(new Error("Not allowed by CORS"));
@@ -85,11 +88,6 @@ app.use("/api/shop/search", searchRoutes);
 app.use("/api/shop/review", reviewRoutes);
 
 app.use("/api/common/feature", featureRoutes);
-
-// HEALTH ROUTE
-app.get("/api/health", (req, res) => {
-  res.status(200).send("OK");
-});
 
 // 404 HANDLER
 app.use("*", (req, res, next) => {
