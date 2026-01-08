@@ -22,7 +22,7 @@ Elora offers a seamless shopping experience with a focus on UX, global payments 
 - **Frontend**: React.js, TypeScript, TailwindCSS, Shadcn
 - **Backend**: Node.js, Express
 - **Database**: MongoDB (with Mongoose ODM)
-- **Deployment**: Vercel/Netlify, GitHub Actions (CI/CD)
+- **Deployment**: Frontend: Vercel,Backend: Render
 
 ---
 
