@@ -78,6 +78,11 @@ app.use("/api/shop/review", reviewRoutes);
 
 app.use("/api/common/feature", featureRoutes);
 
+// HEALTH ROUTE
+app.get("/api/health", (req, res) => {
+  res.status(200).send("OK");
+});
+
 // 404 HANDLER
 app.use("*", (req, res, next) => {
   return next(new Error(`Page ${req.originalUrl} not found`, 404));
