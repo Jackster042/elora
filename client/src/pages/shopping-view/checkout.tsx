@@ -1,5 +1,5 @@
 // REACT
-import { Fragment, useState, useEffect } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 // HOOKS
@@ -13,15 +13,12 @@ import { Button } from "@/components/ui/button";
 import Address from "@/components/shopping-view/address";
 import UserCartItemsContainer from "@/components/shopping-view/cart-items-container";
 import DemoPaymentModal from "@/components/common/demo-payment-modal";
+
 // REDUX
 import { AppDispatch } from "@/store/store";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  createNewOrder,
-  capturePayment,
-  resetOrderState,
-} from "@/store/order-slice";
-import { mergeGuestCart, getCart } from "@/store/shop/cart-slice";
+import { createNewOrder, capturePayment, resetOrderState } from "@/store/order-slice";
+import { getCart, mergeGuestCart } from "@/store/shop/cart-slice";
 import { localCart } from "@/utils/localCart";
 
 const ShoppingCheckout = () => {
@@ -77,7 +74,7 @@ const ShoppingCheckout = () => {
       : null;
 
   const handleInitiatePaypalPayment = () => {
-    if (cartItems.length === 0) {
+    if (!cartItems?.items || cartItems.items.length === 0) {
       toast({
         title: "Your cart is empty. Please add items to proceed",
         variant: "destructive",
@@ -154,12 +151,10 @@ const ShoppingCheckout = () => {
         if (data?.payload?.success) {
           // Fetch updated cart (should be empty after successful order)
           dispatch(getCart(user.id));
-
           toast({
             title: "Payment Successful!",
             description: "Your demo order has been placed successfully.",
           });
-
           // Navigate to home page
           setTimeout(() => {
             navigate("/shop/home");

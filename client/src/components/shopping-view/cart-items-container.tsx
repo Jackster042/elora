@@ -93,6 +93,8 @@ const UserCartItemsContainer = ({ items, isGuest = false }: { items: CartItem; i
   );
   const totalStock = currentProduct?.totalStock || 0;
 
+  const unitPrice = (items.salePrice ?? 0) > 0 ? (items.salePrice ?? 0) : items.price;
+
   console.log(cartItems, "cartItems");
 
   return (
@@ -134,10 +136,7 @@ const UserCartItemsContainer = ({ items, isGuest = false }: { items: CartItem; i
       <div className="flex flex-col items-end">
         <p className="font-semibold">
           $
-          {(
-            (items?.salePrice > 0 ? items.salePrice : items.price) *
-            items.quantity
-          )
+          {(unitPrice * items.quantity)
             .toFixed(2)
             .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
         </p>

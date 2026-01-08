@@ -1,7 +1,7 @@
 import CommonForm from "@/components/common/form";
 import { registerFormControls } from "@/config";
 import React, { useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { registerUser } from "@/store/auth-slice";
 import { AppDispatch } from "@/store/store";
@@ -20,7 +20,6 @@ const AuthRegister = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const location = useLocation();
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -40,7 +39,7 @@ const AuthRegister = () => {
           });
         }
       })
-      .catch((error) => {
+      .catch(() => {
         toast({
           title: "Error",
           description: "Registration failed. Please try again.",

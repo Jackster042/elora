@@ -1,9 +1,36 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios, { AxiosError } from "axios";
 import { localCart, LocalCartItem } from "@/utils/localCart";
+import type { CartItem } from "@/types";
+
+interface ServerCart {
+  _id: string;
+  userId: string;
+  items: CartItem[];
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+const normalizeCart = (cart: any): ServerCart | null => {
+  if (!cart) return null;
+
+  const items: CartItem[] = Array.isArray(cart.items)
+    ? cart.items.map((item: any) => ({
+        ...item,
+        // Ensure these fields exist for UI code paths
+        _id: item._id ?? item.productId,
+        salePrice: item.salePrice ?? 0,
+      }))
+    : [];
+
+  return {
+    ...cart,
+    items,
+  } as ServerCart;
+};
 
 interface CartState {
-  cartItems: any[];
+  cartItems: ServerCart | null;
   localCartItems: LocalCartItem[];
   isLoading: boolean;
   error: string | null;
@@ -16,7 +43,7 @@ interface AuthError {
 }
 
 const initialState: CartState = {
-  cartItems: [],
+  cartItems: null,
   localCartItems: [],
   isLoading: false,
   error: null,
@@ -204,11 +231,11 @@ const shopCartSlice = createSlice({
     });
     builder.addCase(addToCart.fulfilled, (state, action) => {
       state.isLoading = false;
-      state.cartItems = action.payload.data;
+      state.cartItems = normalizeCart(action.payload.data);
     });
     builder.addCase(addToCart.rejected, (state, action) => {
       state.isLoading = false;
-      state.cartItems = [];
+      state.cartItems = null;
       state.error =
         (action.payload as AuthError)?.message || "An error occurred";
     });
@@ -219,11 +246,11 @@ const shopCartSlice = createSlice({
     });
     builder.addCase(getCart.fulfilled, (state, action) => {
       state.isLoading = false;
-      state.cartItems = action.payload.data;
+      state.cartItems = normalizeCart(action.payload.data);
     });
     builder.addCase(getCart.rejected, (state, action) => {
       state.isLoading = false;
-      state.cartItems = [];
+      state.cartItems = null;
       state.error =
         (action.payload as AuthError)?.message || "An error occurred";
     });
@@ -234,11 +261,11 @@ const shopCartSlice = createSlice({
     });
     builder.addCase(updateQuantity.fulfilled, (state, action) => {
       state.isLoading = false;
-      state.cartItems = action.payload.data;
+      state.cartItems = normalizeCart(action.payload.data);
     });
     builder.addCase(updateQuantity.rejected, (state, action) => {
       state.isLoading = false;
-      state.cartItems = [];
+      state.cartItems = null;
       state.error =
         (action.payload as AuthError)?.message || "An error occurred";
     });
@@ -249,11 +276,11 @@ const shopCartSlice = createSlice({
     });
     builder.addCase(removeFromCart.fulfilled, (state, action) => {
       state.isLoading = false;
-      state.cartItems = action.payload.data;
+      state.cartItems = normalizeCart(action.payload.data);
     });
     builder.addCase(removeFromCart.rejected, (state, action) => {
       state.isLoading = false;
-      state.cartItems = [];
+      state.cartItems = null;
       state.error =
         (action.payload as AuthError)?.message || "An error occurred";
     });
@@ -265,7 +292,7 @@ const shopCartSlice = createSlice({
     builder.addCase(mergeGuestCart.fulfilled, (state, action) => {
       state.isLoading = false;
       if (action.payload.merged) {
-        state.cartItems = action.payload.data;
+        state.cartItems = normalizeCart(action.payload.data);
         state.localCartItems = []; // Clear local cart items from state
       }
     });

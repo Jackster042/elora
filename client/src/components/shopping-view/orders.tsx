@@ -85,17 +85,27 @@ const ShoppingOrders = () => {
                         {orderItem?.orderDate.split("T")[0]}
                       </TableCell>
                       <TableCell>
-                        <Badge
-                          className={`py-1 px-3 ${
-                            orderItem?.orderStatus === "completed"
-                              ? "bg-green-500"
-                              : orderItem?.orderStatus === "cancelled"
-                              ? "bg-red-600"
-                              : "bg-black"
-                          }`}
-                        >
-                          {orderItem?.orderStatus}
-                        </Badge>
+                        <div className="flex gap-2">
+                          <Badge
+                            className={`py-1 px-3 ${
+                              orderItem?.orderStatus === "completed"
+                                ? "bg-green-500"
+                                : orderItem?.orderStatus === "cancelled"
+                                ? "bg-red-600"
+                                : "bg-black"
+                            }`}
+                          >
+                            {orderItem?.orderStatus}
+                          </Badge>
+                          {orderItem?.isDemoOrder && (
+                            <Badge
+                              variant="secondary"
+                              className="bg-yellow-100 text-yellow-800 py-1 px-3"
+                            >
+                              DEMO
+                            </Badge>
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell>{orderItem.totalAmount}</TableCell>
                       <TableCell>

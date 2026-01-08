@@ -23,6 +23,7 @@ const featureRoutes = require("./routes/common/featureRoutes");
 // Dynamic CORS configuration for development and production
 const allowedOrigins = [
   "http://localhost:5173",
+  "http://localhost:3000",
   "http://localhost:3001",
   process.env.CLIENT_URL, // Will be set in production
 ].filter(Boolean); // Remove undefined values
@@ -34,10 +35,7 @@ app.use(
       if (!origin) return callback(null, true);
 
       // Check if origin is in allowed list or matches Vercel preview deployments
-      if (
-        allowedOrigins.indexOf(origin) !== -1 ||
-        origin.includes("vercel.app")
-      ) {
+      if (allowedOrigins.indexOf(origin) !== -1 || origin.includes("vercel.app")) {
         callback(null, true);
       } else {
         callback(new Error("Not allowed by CORS"));
@@ -64,6 +62,16 @@ app.use(cookieParser());
 app.options("*", cors());
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+// Health check (useful for Render + smoke tests)
+app.get("/api/health", (req, res) => {
+  return res.status(200).json({
+    ok: true,
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString(),
+  });
+});
+
 // ROUTES
 app.use("/api/auth", authRoutes);
 app.use("/api/admin/products", adminRoutes);
